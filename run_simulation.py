@@ -53,9 +53,9 @@ if __name__ == "__main__":
 	dh_ind1, dh_ind2 = hp.Compute_DH(model, dh_shape='wedge', range_r=[2.5, 9], range_angle=30)
 
 	# compute or load the Jacobian matrices
-	# G1, G2 = hp.Compute_Jacobian(model_perfect, dh_ind1, dh_ind2, print_flag=True) # Jacobian computation
-	G1 = np.load('splc_Jacobian1.npy')
-	G2 = np.load('splc_Jacobian2.npy')
+	G1, G2 = hp.Compute_Jacobian(model_perfect, dh_ind1, dh_ind2, print_flag=True) # Jacobian computation
+	# G1 = np.load('splc_Jacobian1.npy')
+	# G2 = np.load('splc_Jacobian2.npy')
 
 	G = np.concatenate((G1, G2), axis=1)
 
