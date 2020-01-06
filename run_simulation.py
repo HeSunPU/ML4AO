@@ -1,7 +1,6 @@
 import scipy.io as sio
 import scipy as sp
 import numpy as np
-from FPWCpy import systemID as sysid
 from FPWCpy import estimation as est
 from FPWCpy import sensing
 from FPWCpy import detector
@@ -54,9 +53,9 @@ if __name__ == "__main__":
 	dh_ind1, dh_ind2 = hp.Compute_DH(model, dh_shape='wedge', range_r=[2.5, 9], range_angle=30)
 
 	# compute or load the Jacobian matrices
-	# G1, G2 = hp.Compute_Jacobian(model_perfect, dh_ind1, dh_ind2, print_flag=True) # Jacobian computation
-	G1 = np.load('splc_Jacobian1.npy')
-	G2 = np.load('splc_Jacobian2.npy')
+	G1, G2 = hp.Compute_Jacobian(model_perfect, dh_ind1, dh_ind2, print_flag=True) # Jacobian computation
+	# G1 = np.load('splc_Jacobian1.npy')
+	# G2 = np.load('splc_Jacobian2.npy')
 
 	G = np.concatenate((G1, G2), axis=1)
 
@@ -186,10 +185,7 @@ if __name__ == "__main__":
 				data_train_now['u1p'] = data_train['u1p'][:, :, k+1-n_batch:k+1]
 				data_train_now['u2p'] = data_train['u2p'][:, :, k+1-n_batch:k+1]
 				data_train_now['I'] = data_train['I'][:, :, k+1-n_batch:k+1]
-				# mse_list = vl.train_params(data_train_now, lr=1e-8, lr2=1e-3, epoch=10, 
-				# 				params_trainable='all', print_flag=True)
-				# _, _, _, _ = em_identifier.initialize_noise_params(data_train, lr=1e-8, 
-				# 					lr2=1e-2, mstep_itr=100, print_flag=True)
+
 				mse_list = em_identifier.train_params(data_train, lr=1e-7, 
 									lr2=1e-2, epoch=10, mstep_itr=2, print_flag=True, params_trainable='Jacobian')
 

@@ -33,7 +33,7 @@ In our specific case, we assume
 (2) F = I, the identity matrix
 (3) H_k = 4 (G up_k).T, up_k is the pair-wise probe commands
 (4) Q_k = Q0 + Q1 * mean(|G u_k|^2)
-(5) R_k = R0 + R1 * (Ip_k+ + Ip_k-) + R2 * (Ip_k+^2 + Ip_k-^2)
+(5) R_k = R0 + R1 * mean(|G up_k|^2) * mean(|x_k|^2) 
 
 References: 
 "Modern wavefront control for space-based exoplanet coronagraph imaging", He Sun et.al, 2019
@@ -53,8 +53,6 @@ class SSM(object):
 	def __init__(self, Jacobian1, Jacobian2, Q0, Q1, R0, R1, n_observ=4, model_type='normal', dim=200):
 		# Jacobian1 and Jacobian2 are the initial knowladge of the Jacobian matrices
 		# parameters Q0, Q1, R0, R1 define the noise covariance of the state space model
-		# process noises covariance: Q = Q0 + Q1 * sum(uc^2)
-		# observation noises covariance: R = R0 + R1 * probe_contrast + R2 * probe_contrast^2
 		# n_observ is the number of camera images
 		# model_type includes "normal" and "reduced"
 		# dim defines the dimension of the reduced-order model
@@ -451,83 +449,9 @@ class linear_em:
 		self.train_group = tf.group(self.train_Jacobian, self.train_noise_coef)
 		self.init = tf.global_variables_initializer()
 
-	def initialize_noise_params(self, data_train, lr=1e-7, lr2=1e-2, mstep_itr=100, print_flag=False):
-		u1_train = data_train['u1']
-		u2_train = data_train['u2']
-		u1p_train = data_train['u1p']
-		u2p_train = data_train['u2p']
-		image_train = data_train['I']
-
-		n_step = u1_train.shape[1] - 1 # number of control steps
-		n_act = u1_train.shape[0] # number of active actuators on the DM
-		n_pix = image_train.shape[0] # number of pixels in the dark hole
-		n_pair = u1p_train.shape[1]//2 # number of probing pairs in each control step
-		n_image = 2 * n_pair + 1 # number of probe images in each control step
-
-		u1p_train = np.concatenate([np.zeros((n_act, 1, n_step+1)), u1p_train], axis=1)
-		u2p_train = np.concatenate([np.zeros((n_act, 1, n_step+1)), u2p_train], axis=1)
-
-		train_op = self.train_noise_coef
-
-
-		with tf.Session() as sess:
-			sess.run(self.init)
-			# assign values to the variables in the model
-			if self.model.model_type == 'normal':
-				self.model.G1_real.load(np.squeeze(self.params_values['G1']).real)
-				self.model.G1_imag.load(np.squeeze(self.params_values['G1']).imag)
-				self.model.G2_real.load(np.squeeze(self.params_values['G2']).real)
-				self.model.G2_imag.load(np.squeeze(self.params_values['G2']).imag)
-			elif self.model.model_type == 'reduced':
-				self.model.U_svd.load(self.params_values['U'])
-				self.model.V_svd.load(self.params_values['V'])
-			self.model.q0.load(np.log(self.params_values['Q0']))
-			self.model.q1.load(np.log(self.params_values['Q1']))
-			self.model.r0.load(np.log(self.params_values['R0']))
-			self.model.r1.load(np.log(self.params_values['R1']))
-			# self.model.r2.load(np.log(self.params_values['R2']))
-
-			Enp_est_values, P_est_values = sess.run([self.Enp_lse, self.P_lse], feed_dict={self.Ip: np.transpose(image_train, [2, 1, 0]),
-															self.u1p: np.transpose(u1p_train, [2, 1, 0]),
-															self.u2p: np.transpose(u2p_train, [2, 1, 0])})
-
-			dE2, pnoises, cdc, onoises= sess.run([self.dE_square, self.process_noises, self.contrast_d_contrast_mul, self.observation_noises], 
-												feed_dict={self.Enp_old: Enp_est_values[0:n_step, :], 
-															self.P_old: np.zeros(P_est_values[0:n_step, :, :, :].shape),
-															self.Enp_new: Enp_est_values[1:n_step+1, :],
-															self.P_new: np.zeros(P_est_values[1:n_step+1, :, :, :].shape),
-															self.Ip: np.transpose(image_train[:, :, 1:n_step+1], [2, 1, 0]),
-															self.u1c: np.transpose(u1_train[:,0:n_step]), 
-															self.u2c: np.transpose(u2_train[:,0:n_step]),
-															self.u1p: np.transpose(u1p_train[:, :, 1:n_step+1], [2, 1, 0]), 
-															self.u2p: np.transpose(u2p_train[:, :, 1:n_step+1], [2, 1, 0])})
-
-			Q0, Q1 = reg(pnoises, dE2)
-			R0, R1 = reg(onoises, cdc)
-			self.params_values['Q0'] = Q0
-			self.params_values['Q1'] = Q1
-			self.params_values['R0'] = R0
-			self.params_values['R1'] = R1
-
-			if print_flag:
-				print('Q0: {}, Q1: {}, R0: {}, R1: {}'.format(self.params_values['Q0'], self.params_values['Q1'], self.params_values['R0'], self.params_values['R1']))
-		return self.params_values['Q0'], self.params_values['Q1'], self.params_values['R0'], self.params_values['R1']
-
-
-
-		# return dE2, pnoises, cdc, onoises
-		# 	# self.params_values['Q0'] = np.exp(sess.run(self.model.q0))
-		# 	# self.params_values['Q1'] = np.exp(sess.run(self.model.q1))
-		# 	# self.params_values['R0'] = np.exp(sess.run(self.model.r0))
-		# 	# self.params_values['R1'] = np.exp(sess.run(self.model.r1))
-
-		# 	if print_flag:
-		# 		print('Q0: {}, Q1: {}, R0: {}, R1: {}'.format(self.params_values['Q0'], self.params_values['Q1'], self.params_values['R0'], self.params_values['R1']))
-		# return self.params_values['Q0'], self.params_values['Q1'], self.params_values['R0'], self.params_values['R1']
-
 
 	def train_params(self, data_train, lr=1e-7, lr2=1e-2, epoch=2, 
-					print_flag=False, mstep_itr=1, params_trainable='all'):
+					print_flag=False, mstep_itr=1, params_trainable='jacobian'):
 		u1_train = data_train['u1']
 		u2_train = data_train['u2']
 		u1p_train = data_train['u1p']
