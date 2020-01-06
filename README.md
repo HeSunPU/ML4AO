@@ -82,8 +82,7 @@ where "u1" and "u2" have dimension (n_act * n_step), "u1p" and "u2p" have dimens
 
 4. Run system identification
 ```
-mse_list = em_identifier.train_params(data_train, lr=1e-7, 
-									lr2=1e-2, epoch=10, mstep_itr=2, print_flag=True, params_trainable='Jacobian')
+mse_list = em_identifier.train_params(data_train, lr=1e-7, lr2=1e-2, epoch=10, mstep_itr=2, print_flag=True, params_trainable='Jacobian')
 ```
 where "lr" and "lr2" are the learning rates of the EM algorithm, "epoch" is number of EM iterations, "mstep_itr" is number of optimization iterations in the M-step, "print_flag" represents whether display optimization process, "params_trianable" defines different training methods.
 
