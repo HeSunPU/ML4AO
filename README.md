@@ -1,5 +1,4 @@
-# ML4AO
-Machine Learning for Adaptive Optics system identification (ML4AO)
+# ML4AO - Machine Learning for Adaptive Optics system identification
 ![overview image](https://github.com/HeSunPU/ML4AO/blob/master/overview/EM_overview.png)
 [Identification and adaptive control of a high-contrast focal plane wavefront correction system](https://www.spiedigitallibrary.org/journals/Journal-of-Astronomical-Telescopes-Instruments-and-Systems/volume-4/issue-4/049006/Identification-and-adaptive-control-of-a-high-contrast-focal-plane/10.1117/1.JATIS.4.4.049006.full?SSO=1)
 
@@ -83,9 +82,10 @@ where "u1" and "u2" have dimension (n_act * n_step), "u1p" and "u2p" have dimens
 
 4. Run system identification
 ```
-mse_list = em_identifier.train_params(data_train, lr=1e-7, 
-									lr2=1e-2, epoch=10, mstep_itr=2, print_flag=True, params_trainable='Jacobian')
+mse_list = em_identifier.train_params(data_train, lr=1e-7, lr2=1e-2, epoch=10, mstep_itr=2, print_flag=True, params_trainable='Jacobian')
 ```
 where "lr" and "lr2" are the learning rates of the EM algorithm, "epoch" is number of EM iterations, "mstep_itr" is number of optimization iterations in the M-step, "print_flag" represents whether display optimization process, "params_trianable" defines different training methods.
 
-Above command gives representative values for these tuning parameters. Typically, "lr2", "epoch", "mstep_itr" and "params_trianable" need not to be changed. Only "lr" needs to be well tuned.
+Above command gives representative values for these tuning parameters. Typically, "lr2", "mstep_itr" and "params_trianable" need not to be changed. Only "lr" and "epoch" need to be well tuned.
+
+**Please check "run_simulation.py for an example!!!"**
