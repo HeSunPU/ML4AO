@@ -1,4 +1,4 @@
-# ML4AO - Machine Learning for Adaptive Optics system identification (ML4AO)
+# ML4AO - Machine Learning for Adaptive Optics system identification
 ![overview image](https://github.com/HeSunPU/ML4AO/blob/master/overview/EM_overview.png)
 [Identification and adaptive control of a high-contrast focal plane wavefront correction system](https://www.spiedigitallibrary.org/journals/Journal-of-Astronomical-Telescopes-Instruments-and-Systems/volume-4/issue-4/049006/Identification-and-adaptive-control-of-a-high-contrast-focal-plane/10.1117/1.JATIS.4.4.049006.full?SSO=1)
 
