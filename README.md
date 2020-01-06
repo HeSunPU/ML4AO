@@ -88,4 +88,4 @@ mse_list = em_identifier.train_params(data_train, lr=1e-7,
 ```
 where "lr" and "lr2" are the learning rates of the EM algorithm, "epoch" is number of EM iterations, "mstep_itr" is number of optimization iterations in the M-step, "print_flag" represents whether display optimization process, "params_trianable" defines different training methods.
 
-Above command gives representative values for these tuning parameters. Typically, "lr2", "epoch", "mstep_itr" and "params_trianable" need not to be changed. Only "lr" need to be well tuned.
+Above command gives representative values for these tuning parameters. Typically, "lr2", "epoch", "mstep_itr" and "params_trianable" need not to be changed. Only "lr" needs to be well tuned.
