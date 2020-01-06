@@ -40,8 +40,12 @@ Q_k = Q0 + Q1 * mean(|G1 u1_k + G2 u2_k|^2)
 n_k ~ N(0, R_k),
 R_k = R0 + R1 * mean(|G1 u1p_k + G2 u2p_k|^2) * mean(|x_k|^2)
 ```
+1. Import the EM system identification package
+```
+import EMsystemID as em
+```
 
-1. Define parameters of the original state space model (SSM)
+2. Define parameters of the original state space model (SSM)
 ```
 params_values = {}
 params_values['G1'] = G1
@@ -52,7 +56,7 @@ params_values['R0'] = R0
 params_values['R1'] = R1
 ```
 
-2. Define a EM identifier
+3. Define a EM identifier
 ```
 em_identifier = em.linear_em(params_values, n_pair, model_type='normal')
 ```
@@ -65,7 +69,7 @@ em_identifier = em.linear_em(params_values, n_pair, model_type='reduced', dim=10
 ```
 )
 
-3. Save the WFSC data
+4. Save the WFSC data
 ```
 data_train = {}
 data_train['u1'] = u1
@@ -80,7 +84,7 @@ where "u1" and "u2" have dimension (n_act * n_step), "u1p" and "u2p" have dimens
 
 "u1p" and "u2p" should be organized as (1st positive probe, 1st negative probe, ...), I should be organized as (non-probed image, 1st positive probed image, 1st negative probed image).
 
-4. Run system identification
+5. Run system identification
 ```
 mse_list = em_identifier.train_params(data_train, lr=1e-7, lr2=1e-2, epoch=10, mstep_itr=2, print_flag=True, params_trainable='Jacobian')
 ```
