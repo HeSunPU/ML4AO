@@ -22,7 +22,7 @@ Further mathematical and implementation details are described in our paper:
 If you make use of the code, please cite the paper in any resulting publications.
 
 ## Setup
-The EM system identification codes ("EMsystemID.py") are developed based on python package numpy, scipy and tensorflow. 
+The EM system identification codes ("EMsystemID.py") are developed based on python package "numpy", "scipy" and "tensorflow". 
 
 It is originally tested using Focal Plane Wavefront Control Python package ("FPWCpy"), as also included in this repository. However, it could be used independently in identifying the state space model of any WFSC system.
 
