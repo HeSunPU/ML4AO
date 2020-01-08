@@ -78,11 +78,11 @@ data_train['u1p'] = u1p
 data_train['u2p'] = u2p
 data_train['I'] = I
 ```
-where "u1" and "u2" have dimension (n_act * n_step), "u1p" and "u2p" have dimension (n_act * (2*n_pair) * n_step), "I" has dimension (n_act * (2*n_pair+1) * n_step). 
+where "u1" and "u2" have dimension (n_act * n_step), "u1p" and "u2p" have dimension (n_act * (2*n_pair) * n_step), "I" has dimension (n_pix * (2*n_pair+1) * n_step). 
 
-"n_act" is the number of actuators on a DM and "n_step" is the total control step. 
+"n_act" is the number of actuators on a DM, "n_pix" is number of pixels in the dark hole (for broadband case, it should be n_pix*n_wavelength) and "n_step" is the total control step. 
 
-"u1p" and "u2p" should be organized as (1st positive probe, 1st negative probe, ...), I should be organized as (non-probed image, 1st positive probed image, 1st negative probed image).
+"u1p" and "u2p" should be organized as (1st positive probe, 1st negative probe, ...), I should be organized as (non-probed image, 1st positive probed image, 1st negative probed image, ...).
 
 5. Run system identification
 ```
