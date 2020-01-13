@@ -29,7 +29,7 @@ It is originally tested using Focal Plane Wavefront Control Python package ("FPW
 ### The formula of the state space model (SSM) we are identifying
 ```
 x_k = x_{k-1} + G1 u1_k + G2 u2_k + w_k,
-y_k = H_k x_k + n_k + n_k, H_k = 4 (G1 u1p_k + G2 u2p_k).T,
+y_k = H_k x_k + n_k, H_k = 4 (G1 u1p_k + G2 u2p_k).T,
 ```
 where "x_k" is the electric field, "y_k" is the pair-wise difference image, "G1" and "G2" are the Jacobian matrices of DM1 and DM2, "u1_k" and "u2_k" are the control commands of DM1 and DM2, "H_k" is the observation matrix, "u1p_k" and "u2p_k" are the probe commands of DM1 and DM2, "w_k" is the process noise and "n_k" is the observation noise.
 
